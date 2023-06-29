@@ -1,19 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_diy/app/data/models/usuario_model.dart';
+import 'package:flutter_application_diy/app/data/http/http_client.dart';
+import 'package:flutter_application_diy/app/data/repositories/usuario_repository.dart';
+import 'package:flutter_application_diy/app/pages/login/stores/usuario_store.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final UsuarioStore usuarioStore = UsuarioStore(
+    repository: UsuarioRepository(
+      client: HttpClient(),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    usuarioStore.getUsuarios();
+  }
+
   final _formKey = GlobalKey<FormState>();
   final _emailTextFieldController = TextEditingController();
   final _passwordTextFieldController = TextEditingController();
 
   bool isObscureText = true;
+  Icon showVisibleIcon(bool isObscureText) {
+    if (isObscureText) {
+      return const Icon(Icons.visibility);
+    }
+    return const Icon(Icons.visibility_off);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                         if (email == null || email.isEmpty) {
                           return 'Digite seu e-mail';
                         }
+
                         return null;
                       },
                     ),
@@ -93,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: 'Senha',
                           hintText: 'Digite sua senha',
                           suffixIcon: IconButton(
-                            icon: const Icon(Icons.visibility),
+                            icon: showVisibleIcon(isObscureText),
                             onPressed: () {
                               setState(() => isObscureText = !isObscureText);
                             },
@@ -106,7 +127,12 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor: Colors.black,
                       ),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {}
+                        if (_formKey.currentState!.validate()) {
+                          final email = _emailTextFieldController.text;
+                          final password = _passwordTextFieldController.text;
+
+                          logar(email: email, pass: password);
+                        }
                       },
                       child: const Text('Entrar'),
                     )
@@ -125,11 +151,11 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Erro'),
-            content: Text('O usuário não foi encontrado.'),
+            title: const Text('Erro'),
+            content: const Text('O usuário não foi encontrado.'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -138,6 +164,15 @@ class _LoginPageState extends State<LoginPage> {
           );
         });
   }
-}
 
-// Color(0xff9CCCF7)
+  void logar({required String email, required String pass}) {
+    final users = usuarioStore.state.value;
+
+    try {
+      users.firstWhere((user) => user.email == email && user.password == pass);
+      Navigator.pushNamed(context, '/home');
+    } catch (e) {
+      _showNoUserFoundDialog(context);
+    }
+  }
+}
