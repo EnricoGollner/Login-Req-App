@@ -30,9 +30,9 @@ class _LoginPageState extends State<LoginPage> {
   bool isObscureText = true;
   Icon showVisibleIcon(bool isObscureText) {
     if (isObscureText) {
-      return const Icon(Icons.visibility);
+      return const Icon(Icons.visibility_off);
     }
-    return const Icon(Icons.visibility_off);
+    return const Icon(Icons.visibility);
   }
 
   @override
