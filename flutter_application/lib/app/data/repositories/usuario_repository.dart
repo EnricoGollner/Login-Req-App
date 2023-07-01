@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_application_diy/app/data/http/exceptions.dart';
 import 'package:flutter_application_diy/app/data/http/http_client.dart';
 import 'package:flutter_application_diy/app/data/models/usuario_model.dart';
+import 'package:http/http.dart';
 
 abstract class IUsuarioRepository {
   Future<List<UsuarioModel>> getUsuarios();
@@ -15,14 +16,15 @@ class UsuarioRepository implements IUsuarioRepository {
 
   @override
   Future<List<UsuarioModel>> getUsuarios() async {
-    final response = await client.get(url: 'http://localhost:8080/users');
+    final Response response =
+        await client.get(url: 'https://dummyjson.com/users');
 
     if (response.statusCode == 200) {
       final List<UsuarioModel> users = [];
 
       final body = jsonDecode(response.body);
 
-      body.map((user) {
+      body['users'].map((user) {
         final usuario = UsuarioModel.fromMap(user);
 
         users.add(usuario);
