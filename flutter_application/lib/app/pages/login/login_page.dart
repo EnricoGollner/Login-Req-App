@@ -24,6 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  final _emailKey = GlobalKey<FormFieldState>();
+
   final _emailTextFieldController = TextEditingController();
   final _passwordTextFieldController = TextEditingController();
 
@@ -42,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       alignment: Alignment.center,
       color: const Color(0xff9CCCF7),
       child: Container(
-        height: 414,
+        height: 470,
         width: 370,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -95,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         children: [
           TextFormField(
+            key: _emailKey,
             controller: _emailTextFieldController,
             decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
@@ -130,21 +133,43 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               )),
           const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(328, 50),
-              backgroundColor: Colors.black,
-            ),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                final email = _emailTextFieldController.text;
-                final password = _passwordTextFieldController.text;
+          Column(
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(328, 50),
+                  backgroundColor: Colors.black,
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final email = _emailTextFieldController.text;
+                    final password = _passwordTextFieldController.text;
 
-                logar(email: email, pass: password);
-              }
-            },
-            child: const Text('Entrar'),
-          )
+                    logar(email: email, pass: password);
+                  }
+                },
+                child: const Text('Entrar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_emailKey.currentState!.validate()) {
+                    final snackBar = SnackBar(
+                      content: const Text('Vamos recuperar a sua senha!'),
+                      action: SnackBarAction(
+                        label: 'Desfazer',
+                        onPressed: () {
+                          // Some code to undo the change.
+                        },
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
+                child: const Text('Esqueci minha senha'),
+              ),
+            ],
+          ),
         ],
       ),
     );

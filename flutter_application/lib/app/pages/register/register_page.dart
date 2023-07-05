@@ -32,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
         color: const Color(0xff9CCCF7),
         alignment: Alignment.center,
         child: Container(
-          height: 414,
+          height: 460,
           width: 370,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -72,7 +72,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     backgroundColor: Colors.black,
                     minimumSize: const Size(328, 50),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.pop(context);
+                    }
+                  },
                   child: const Text('Cadastrar'),
                 ),
               )
@@ -81,6 +85,13 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  String? textFormValidation(String? textFormContent) {
+    if (textFormContent == null || textFormContent.isEmpty) {
+      return 'Este campo não pode ficar vazio';
+    }
+    return null;
   }
 
   Form _registerForm() {
@@ -92,37 +103,43 @@ class _RegisterPageState extends State<RegisterPage> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('E-mail'),
-                hintText: 'Digite seu e-mail',
-                prefixIcon: Icon(Icons.email)),
+              border: OutlineInputBorder(),
+              label: Text('E-mail'),
+              hintText: 'Digite seu e-mail',
+              prefixIcon: Icon(Icons.email),
+            ),
+            validator: textFormValidation,
           ),
           const SizedBox(height: 15),
           TextFormField(
             controller: _passController,
             decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('Senha'),
-                hintText: 'Digite sua senha',
-                prefixIcon: Icon(Icons.lock)),
+              border: OutlineInputBorder(),
+              label: Text('Senha'),
+              hintText: 'Digite sua senha',
+              prefixIcon: Icon(Icons.lock),
+            ),
+            validator: textFormValidation,
           ),
           const SizedBox(height: 15),
           TextFormField(
             controller: _passConfController,
             decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                label: const Text('Digite sua senha'),
-                hintText: 'Confirme sua senha',
-                prefixIcon: const Icon(Icons.lock),
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isObscure = !_isObscure;
-                    });
-                  },
-                  icon: showVisibleIcon(_isObscure),
-                )),
+              border: const OutlineInputBorder(),
+              label: const Text('Digite sua senha'),
+              hintText: 'Confirme sua senha',
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                  });
+                },
+                icon: showVisibleIcon(_isObscure),
+              ),
+            ),
             obscureText: _isObscure,
+            validator: textFormValidation,
           )
         ],
       ),
