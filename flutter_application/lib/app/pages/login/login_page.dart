@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailTextFieldController = TextEditingController();
   final _passwordTextFieldController = TextEditingController();
 
-  bool isObscureText = true;
+  bool _isObscureText = true;
   Icon showVisibleIcon(bool isObscureText) {
     if (isObscureText) {
       return const Icon(Icons.visibility_off);
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         padding:
             const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 30),
-        child: Column(children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Row(
             children: [
               Icon(Icons.house),
@@ -81,69 +81,73 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text('Crie sua conta'))
                 ],
               ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailTextFieldController,
-                      decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'E-mail',
-                          hintText: 'Digite seu e-mail'),
-                      validator: (email) {
-                        if (email == null || email.isEmpty) {
-                          return 'Digite seu e-mail';
-                        }
-
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                        controller: _passwordTextFieldController,
-                        obscureText: isObscureText, // oculta o texto digitado
-                        validator: (pass) {
-                          if (pass == null || pass.isEmpty) {
-                            return 'Digite sua senha';
-                          } else if (pass.length <= 5) {
-                            return 'Digite uma senha mais forte';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          hintText: 'Digite sua senha',
-                          suffixIcon: IconButton(
-                            icon: showVisibleIcon(isObscureText),
-                            onPressed: () {
-                              setState(() => isObscureText = !isObscureText);
-                            },
-                          ),
-                        )),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(328, 50),
-                        backgroundColor: Colors.black,
-                      ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final email = _emailTextFieldController.text;
-                          final password = _passwordTextFieldController.text;
-
-                          logar(email: email, pass: password);
-                        }
-                      },
-                      child: const Text('Entrar'),
-                    )
-                  ],
-                ),
-              )
+              _loginForm()
             ],
           )
         ]),
       ),
     ));
+  }
+
+  Form _loginForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _emailTextFieldController,
+            decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'E-mail',
+                hintText: 'Digite seu e-mail'),
+            validator: (email) {
+              if (email == null || email.isEmpty) {
+                return 'Digite seu e-mail';
+              }
+
+              return null;
+            },
+          ),
+          TextFormField(
+              controller: _passwordTextFieldController,
+              obscureText: _isObscureText, // oculta o texto digitado
+              validator: (pass) {
+                if (pass == null || pass.isEmpty) {
+                  return 'Digite sua senha';
+                } else if (pass.length <= 5) {
+                  return 'Digite uma senha mais forte';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Senha',
+                hintText: 'Digite sua senha',
+                suffixIcon: IconButton(
+                  icon: showVisibleIcon(_isObscureText),
+                  onPressed: () {
+                    setState(() => _isObscureText = !_isObscureText);
+                  },
+                ),
+              )),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(328, 50),
+              backgroundColor: Colors.black,
+            ),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                final email = _emailTextFieldController.text;
+                final password = _passwordTextFieldController.text;
+
+                logar(email: email, pass: password);
+              }
+            },
+            child: const Text('Entrar'),
+          )
+        ],
+      ),
+    );
   }
 
   void _showNoUserFoundDialog(BuildContext context) {
